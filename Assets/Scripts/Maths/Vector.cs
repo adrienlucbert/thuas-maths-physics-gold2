@@ -1,7 +1,10 @@
+using UnityEngine;
+
 namespace GDS.Maths
 {
     namespace detail
     {
+        [System.Serializable]
         public class Vector
         {
             public int size
@@ -9,7 +12,7 @@ namespace GDS.Maths
                 get;
                 private set;
             }
-            private float[] values;
+            [SerializeField] private float[] values;
 
             public Vector(int size)
             {
@@ -32,7 +35,7 @@ namespace GDS.Maths
 
             public Vector Copy()
             {
-                return new Vector(this.values);
+                return new Vector((float[])this.values.Clone());
             }
 
             public T As<T>() where T : Vector, new()
@@ -100,6 +103,18 @@ namespace GDS.Maths
                 return (this - rhs).magnitude;
             }
 
+            /// <summary>
+            /// Project `this` onto the given vector.
+            /// Equivalent to https://docs.unity3d.com/ScriptReference/Vector3.Project.html
+            /// </summary>
+            /// <param name="onNormal">Vector onto which to project `this`</param>
+            /// <returns>Projected vector</returns>
+            public Vector Project(Vector onNormal)
+            {
+                float normalMagnitude = onNormal.magnitude;
+                return ((this * onNormal) / (normalMagnitude * normalMagnitude)) * onNormal;
+            }
+
             public static Vector operator +(Vector lhs, Vector rhs)
             {
                 UnityEngine.Debug.Assert(lhs.size == rhs.size,
@@ -107,6 +122,13 @@ namespace GDS.Maths
                 Vector v = lhs.Copy();
                 for (int i = 0; i < lhs.size; ++i)
                     v[i] += rhs[i];
+                return v;
+            }
+            public static Vector operator +(Vector lhs, float rhs)
+            {
+                Vector v = lhs.Copy();
+                for (int i = 0; i < lhs.size; ++i)
+                    v[i] += rhs;
                 return v;
             }
 
@@ -119,6 +141,13 @@ namespace GDS.Maths
                     v[i] -= rhs[i];
                 return v;
             }
+            public static Vector operator -(Vector lhs, float rhs)
+            {
+                Vector v = lhs.Copy();
+                for (int i = 0; i < lhs.size; ++i)
+                    v[i] -= rhs;
+                return v;
+            }
 
             public static Vector operator *(Vector lhs, Vector rhs)
             {
@@ -129,6 +158,13 @@ namespace GDS.Maths
                     v[i] *= rhs[i];
                 return v;
             }
+            public static Vector operator *(Vector lhs, float rhs)
+            {
+                Vector v = lhs.Copy();
+                for (int i = 0; i < lhs.size; ++i)
+                    v[i] *= rhs;
+                return v;
+            }
 
             public static Vector operator /(Vector lhs, Vector rhs)
             {
@@ -137,6 +173,13 @@ namespace GDS.Maths
                 Vector v = lhs.Copy();
                 for (int i = 0; i < lhs.size; ++i)
                     v[i] /= rhs[i];
+                return v;
+            }
+            public static Vector operator /(Vector lhs, float rhs)
+            {
+                Vector v = lhs.Copy();
+                for (int i = 0; i < lhs.size; ++i)
+                    v[i] /= rhs;
                 return v;
             }
 
@@ -186,6 +229,7 @@ namespace GDS.Maths
             public int size { get; }
         }
 
+        [System.Serializable]
         public class VectorBase<T, M> : Vector
           where T : IVectorSize, new()
           where M : VectorBase<T, M>, new()
@@ -224,12 +268,29 @@ namespace GDS.Maths
                 get { return base.normalized.As<M>(); }
             }
 
+            public M Project(M vector, M onNormal)
+            {
+                return base.Project(onNormal as Vector).As<M>();
+            }
+
             public static M operator +(VectorBase<T, M> lhs, Vector rhs)
             {
                 return ((lhs as Vector) + rhs).As<M>();
             }
+            public static M operator +(VectorBase<T, M> lhs, float rhs)
+            {
+                return ((lhs as Vector) + rhs).As<M>();
+            }
+            public static M operator +(float lhs, VectorBase<T, M> rhs)
+            {
+                return ((rhs as Vector) + lhs).As<M>();
+            }
 
             public static M operator -(VectorBase<T, M> lhs, Vector rhs)
+            {
+                return ((lhs as Vector) - rhs).As<M>();
+            }
+            public static M operator -(VectorBase<T, M> lhs, float rhs)
             {
                 return ((lhs as Vector) - rhs).As<M>();
             }
@@ -238,8 +299,20 @@ namespace GDS.Maths
             {
                 return ((lhs as Vector) * rhs).As<M>();
             }
+            public static M operator *(VectorBase<T, M> lhs, float rhs)
+            {
+                return ((lhs as Vector) * rhs).As<M>();
+            }
+            public static M operator *(float lhs, VectorBase<T, M> rhs)
+            {
+                return ((rhs as Vector) * lhs).As<M>();
+            }
 
             public static M operator /(VectorBase<T, M> lhs, Vector rhs)
+            {
+                return ((lhs as Vector) / rhs).As<M>();
+            }
+            public static M operator /(VectorBase<T, M> lhs, float rhs)
             {
                 return ((lhs as Vector) / rhs).As<M>();
             }
@@ -264,6 +337,7 @@ namespace GDS.Maths
         }
     }
 
+    [System.Serializable]
     public class Vector2 : detail.VectorBase<VectorSizes.VectorSize2, Vector2>
     {
         public Vector2()
@@ -293,6 +367,7 @@ namespace GDS.Maths
         }
     }
 
+    [System.Serializable]
     public class Vector3 : detail.VectorBase<VectorSizes.VectorSize3, Vector3>
     {
         public Vector3()
@@ -329,6 +404,7 @@ namespace GDS.Maths
         }
     }
 
+    [System.Serializable]
     public class Vector4 : detail.VectorBase<VectorSizes.VectorSize4, Vector4>
     {
         public Vector4()
