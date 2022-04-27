@@ -29,7 +29,8 @@ namespace GDS.Physics
         {
             collision = new Collision2D
             {
-                collider = to,
+                from = from,
+                to = to,
                 contacts = from.GetContactPoints(to)
             };
             return collision.contacts.Length > 0;
@@ -41,7 +42,8 @@ namespace GDS.Physics
                 this.contacts[i].DrawGizmos();
         }
 
-        ACollider2D collider;
-        ContactPoint2D[] contacts;
+        public ACollider2D from;
+        public ACollider2D to;
+        public ContactPoint2D[] contacts;
     }
 }

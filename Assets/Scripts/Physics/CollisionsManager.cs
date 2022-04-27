@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GDS.Physics
@@ -13,6 +14,8 @@ namespace GDS.Physics
     {
         private void OnDrawGizmos()
         {
+            List<Collision2D> collisions = new List<Collision2D> { };
+
             ACollider2D[] colliders = this.GetComponentsInChildren<ACollider2D>();
             for (int i = 0; i < colliders.Length; ++i)
             {
@@ -25,10 +28,14 @@ namespace GDS.Physics
                     // we can avoid computing the collision response for them
                     if (colliders[i].isStatic)
                         continue;
-                    // If a collision happened, resolve it
+                    // If a collision happened, add it to the list
                     if (Collision2D.Compute(colliders[i], colliders[j], out Collision2D collision))
-                        colliders[i].GetComponent<ACollisionResolver2D>().Resolve(collision);
+                        collisions.Add(collision);
                 }
+            }
+            foreach (Collision2D collision in collisions)
+            {
+                collision.from.GetComponent<ACollisionResolver2D>().Resolve(collision);
             }
         }
     }
