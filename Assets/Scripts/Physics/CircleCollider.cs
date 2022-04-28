@@ -5,21 +5,25 @@ namespace GDS.Physics
     [RequireComponent(typeof(Renderer))]
     public class CircleCollider : ACollider2D
     {
-        private Renderer _renderer;
+        private Renderer __renderer;
+        private Renderer _renderer
+        {
+            get
+            {
+                if (this.__renderer == null)
+                    this.__renderer = this.GetComponent<Renderer>();
+                return this.__renderer;
+            }
+        }
         public GDS.Maths.Vector2 center
             => new GDS.Maths.Vector2(this.transform.position.x, this.transform.position.y);
         public float radius
         {
             get
             {
-                GDS.Maths.Vector3 extents = (GDS.Maths.Vector3)this.GetComponent<Renderer>().bounds.extents;
+                GDS.Maths.Vector3 extents = (GDS.Maths.Vector3)this._renderer.bounds.extents;
                 return Mathf.Max(extents.x, extents.y);
             }
-        }
-
-        private void Awake()
-        {
-            this._renderer = this.GetComponent<Renderer>();
         }
 
         public override float GetArea()
