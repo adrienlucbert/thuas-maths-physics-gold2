@@ -13,13 +13,16 @@ namespace GDS.Physics
 
         public Type type = Type.Force;
 
-        public Force()
-          : base()
-        { }
-
-        public Force(float x, float y, float z)
+        public Force(float x, float y, float z, Type type)
           : base(x, y, z)
-        { }
+        {
+            this.type = type;
+        }
+        public Force(Maths.Vector3 force, Type type)
+         : base(force.x, force.y, force.z)
+        {
+            this.type = type;
+        }
 
         public Maths.Vector3 Compute(float mass, float timestep)
         {

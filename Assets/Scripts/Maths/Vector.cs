@@ -7,22 +7,16 @@ namespace GDS.Maths
         [System.Serializable]
         public class Vector
         {
-            public int size
-            {
-                get;
-                private set;
-            }
+            public int size => this.values.Length;
             [SerializeField] private float[] values;
 
             public Vector(int size)
             {
-                this.size = size;
                 this.values = new float[size];
             }
 
             public Vector(params float[] values)
             {
-                this.size = values.Length;
                 this.values = values;
             }
 
@@ -113,6 +107,17 @@ namespace GDS.Maths
             {
                 float normalMagnitude = onNormal.magnitude;
                 return ((this * onNormal) / (normalMagnitude * normalMagnitude)) * onNormal;
+            }
+
+            /// <summary>
+            /// Reflects `this` off the plane defined by a normal.
+            /// Equivalent to https://docs.unity3d.com/ScriptReference/Vector3.Reflect.html
+            /// </summary>
+            /// <param name="inNormal">Plane's normal vector (must be normalized)</param>
+            /// <returns>Reflected vector</returns>
+            public Vector Reflect(Vector inNormal)
+            {
+                return this - (this * inNormal) * 2f * inNormal;
             }
 
             public static Vector operator +(Vector lhs, Vector rhs)
@@ -268,9 +273,14 @@ namespace GDS.Maths
                 get { return base.normalized.As<M>(); }
             }
 
-            public M Project(M vector, M onNormal)
+            public M Project(M onNormal)
             {
                 return base.Project(onNormal as Vector).As<M>();
+            }
+
+            public M Reflect(M inNormal)
+            {
+                return base.Reflect(inNormal as Vector).As<M>();
             }
 
             public static M operator +(VectorBase<T, M> lhs, Vector rhs)

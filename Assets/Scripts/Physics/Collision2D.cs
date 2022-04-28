@@ -13,13 +13,14 @@ namespace GDS.Physics
 
         public void DrawGizmos()
         {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere((UnityEngine.Vector2)this.position, 0.01f);
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere((UnityEngine.Vector2)this.position, 0.05f);
             Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal * this.penetration));
         }
 
-        GDS.Maths.Vector2 position;
-        GDS.Maths.Vector2 normal;
+        public GDS.Maths.Vector2 position;
+        public GDS.Maths.Vector2 normal;
         public float penetration;
     }
 

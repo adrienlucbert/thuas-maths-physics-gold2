@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GDS.Physics
@@ -5,22 +6,34 @@ namespace GDS.Physics
     [RequireComponent(typeof(ACollider2D))]
     public class ForcesManager : MonoBehaviour
     {
+        public Maths.Vector3 Speed = Maths.Vector3.zero;
+
+        [SerializeField] private List<Force> _forces;
         private ACollider2D _collider;
-        [SerializeField] private Force[] _forces;
-        public Maths.Vector3 Speed { get; private set; } = Maths.Vector3.zero;
 
         private void Start()
         {
             this._collider = this.GetComponent<ACollider2D>();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            /*Maths.Vector3 forcesSum = Maths.Vector3.zero;
-            for (int i = 0; i < this._forces.Length; ++i)
-                forcesSum = forcesSum + this._forces[i].Compute(this._collider.GetMass(), Time.deltaTime);
-            this.Speed = this.Speed + forcesSum;
-            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed);*/
+            Maths.Vector3 forcesSum = Maths.Vector3.zero;
+            foreach (Force force in this._forces)
+                forcesSum += force.Compute(this._collider.GetMass(), Time.deltaTime);
+            this._forces.RemoveAll(force => force.type == Force.Type.VelocityChange);
+            this.Speed += forcesSum;
+            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed);
+        }
+
+        public void AddForce(Force force)
+        {
+            this._forces.Add(force);
+        }
+
+        public void RemoveForce(Force force)
+        {
+            this._forces.Remove(force);
         }
     }
 }

@@ -12,11 +12,11 @@ namespace GDS.Physics
     /// </summary>
     public class CollisionsManager : MonoBehaviour
     {
-        private void OnDrawGizmos()
+        private void FixedUpdate()
         {
             List<Collision2D> collisions = new List<Collision2D> { };
-
             ACollider2D[] colliders = this.GetComponentsInChildren<ACollider2D>();
+
             for (int i = 0; i < colliders.Length; ++i)
             {
                 for (int j = 0; j < colliders.Length; ++j)
@@ -34,9 +34,7 @@ namespace GDS.Physics
                 }
             }
             foreach (Collision2D collision in collisions)
-            {
                 collision.from.GetComponent<ACollisionResolver2D>().Resolve(collision);
-            }
         }
     }
 }
