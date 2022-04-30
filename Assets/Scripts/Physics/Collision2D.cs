@@ -4,11 +4,10 @@ namespace GDS.Physics
 {
     public class ContactPoint2D
     {
-        public ContactPoint2D(GDS.Maths.Vector2 position, GDS.Maths.Vector2 normal, float penetration)
+        public ContactPoint2D(GDS.Maths.Vector2 position, GDS.Maths.Vector2 normal)
         {
             this.position = position;
             this.normal = normal;
-            this.penetration = penetration;
         }
 
         public void DrawGizmos()
@@ -16,12 +15,11 @@ namespace GDS.Physics
             Gizmos.color = Color.blue;
             Gizmos.DrawSphere((UnityEngine.Vector2)this.position, 0.01f);
             Gizmos.color = Color.green;
-            Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal * this.penetration));
+            Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal));
         }
 
         public GDS.Maths.Vector2 position;
         public GDS.Maths.Vector2 normal;
-        public float penetration;
     }
 
     public struct Collision2D
@@ -32,9 +30,10 @@ namespace GDS.Physics
             {
                 from = from,
                 to = to,
-                contacts = from.GetContactPoints(to)
+                contacts = null,
+                toi = 0f
             };
-            return collision.contacts.Length > 0;
+            return from.GetContactPoints(to, out collision.contacts, out collision.toi);
         }
 
         public void DrawGizmos()
@@ -46,5 +45,9 @@ namespace GDS.Physics
         public ACollider2D from;
         public ACollider2D to;
         public ContactPoint2D[] contacts;
+        /// <summary>
+        /// Roughly estimated time of impact (not considering forces).
+        /// </summary>
+        public float toi;
     }
 }

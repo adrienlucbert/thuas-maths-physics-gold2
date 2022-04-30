@@ -7,6 +7,8 @@ namespace GDS.Physics
     public class ForcesManager : MonoBehaviour
     {
         public Maths.Vector3 Speed = Maths.Vector3.zero;
+        private float t3;
+        private float t4;
 
         [SerializeField] private List<Force> _forces;
         private ACollider2D _collider;
@@ -23,7 +25,7 @@ namespace GDS.Physics
                 forcesSum += force.Compute(this._collider.GetMass(), Time.deltaTime);
             this._forces.RemoveAll(force => force.type == Force.Type.VelocityChange);
             this.Speed += forcesSum;
-            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed);
+            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed * Time.deltaTime);
         }
 
         public void AddForce(Force force)

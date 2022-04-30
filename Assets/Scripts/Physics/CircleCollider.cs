@@ -32,40 +32,65 @@ namespace GDS.Physics
             return Mathf.PI * this.radius * this.radius;
         }
 
-        public override GDS.Physics.ContactPoint2D[] GetContactPoints(ACollider2D collider)
+        public override bool GetContactPoints(ACollider2D collider, out ContactPoint2D[] contacts, out float toi)
         {
+            contacts = null;
+            toi = 0f;
+
+            // Gizmos.color = Color.red;
+            // Gizmos.DrawLine((UnityEngine.Vector2)this.center, (UnityEngine.Vector2)(this.center + new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y)));
+
             if (collider.GetType() == typeof(CircleCollider))
             {
-                CircleCollider circleCollider = collider as CircleCollider;
-                float distance = this.center.Distance(circleCollider.center);
-                if (distance <= this.radius + circleCollider.radius)
+                CircleCollider rhs = collider as CircleCollider;
+                Maths.Vector2 lhsSpeed = new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y);
+                Maths.Vector2 rhsSpeed = new Maths.Vector2(rhs.Forces?.Speed.x ?? 0f, rhs.Forces?.Speed.y ?? 0f);
+                if (!CollisionHelpers2D.CCD.GetCircleCircleIntersection(
+                      new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
+                      new CollisionHelpers2D.MovingCircleInput { center = rhs.center, radius = rhs.radius, speed = rhsSpeed },
+                      out var collision, Time.deltaTime))
+                    return false;
+
+                // Gizmos.color = Color.red;
+                // Gizmos.DrawSphere((UnityEngine.Vector2)collision.position, 0.05f);
+                // Gizmos.DrawLine((UnityEngine.Vector2)collision.position, (UnityEngine.Vector2)(collision.position + collision.normal));
+
+                // Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
+                // Gizmos.DrawSphere((UnityEngine.Vector2)(collision.position), 0.25f);
+                // Gizmos.DrawSphere((UnityEngine.Vector2)(rhs.center + (rhsSpeed * collision.toi)), 0.25f);
+
+                contacts = new ContactPoint2D[]
                 {
-                    float penetration = this.radius - (distance - circleCollider.radius);
-                    GDS.Maths.Vector2 normal = (this.center - circleCollider.center).normalized;
-                    GDS.Maths.Vector2 contact = this.center - normal * this.radius;
-                    return new ContactPoint2D[] { new ContactPoint2D(contact, normal, penetration) };
-                }
-                return new ContactPoint2D[] { };
+                  new ContactPoint2D(collision.position, collision.normal)
+                };
+                toi = collision.toi;
+                return true;
             }
             if (collider.GetType() == typeof(LineCollider))
             {
-                LineCollider lineCollider = collider as LineCollider;
-                // Get projection of the circle center on the line
-                GDS.Maths.Vector2 projection = lineCollider.origin + (this.center - lineCollider.origin).Project(lineCollider.direction);
-                GDS.Maths.Vector2 normal = this.center - projection;
-                float distance = normal.magnitude;
-                if (distance <= this.radius)
+                LineCollider rhs = collider as LineCollider;
+                Maths.Vector2 lhsSpeed = new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y);
+                if (!CollisionHelpers2D.CCD.GetCircleLineIntersection(
+                      new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
+                      new CollisionHelpers2D.LineInput { origin = rhs.origin, direction = rhs.direction },
+                      out var collision, Time.deltaTime))
+                    return false;
+
+                // Gizmos.color = Color.red;
+                // Gizmos.DrawSphere((UnityEngine.Vector2)collision.position, 0.05f);
+
+                GDS.Maths.Vector2 contact = collision.position - (collision.normal * this.radius);
+
+                // Gizmos.color = Color.blue;
+                // Gizmos.DrawLine((UnityEngine.Vector2)contact, (UnityEngine.Vector2)(contact + collision.normal));
+                // Gizmos.DrawSphere((UnityEngine.Vector2)contact, 0.05f);
+
+                contacts = new ContactPoint2D[]
                 {
-                    normal = normal.normalized;
-                    float penetration = this.radius - distance;
-                    GDS.Maths.Vector2 contact = projection - normal * penetration;
-                    penetration = contact.Distance(projection);
-                    return new ContactPoint2D[]
-                    {
-                        new ContactPoint2D(contact, normal, penetration)
-                    };
-                }
-                return new ContactPoint2D[] { };
+                  new ContactPoint2D(contact, collision.normal)
+                };
+                toi = collision.toi;
+                return true;
             }
             throw new System.Exception($"Unsupported collision type between {typeof(CircleCollider)} and {collider.GetType()}");
         }

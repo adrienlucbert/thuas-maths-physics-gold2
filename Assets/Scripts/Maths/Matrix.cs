@@ -18,6 +18,48 @@ namespace GDS.Maths
                 private set;
             }
             private float[,] values;
+            public bool isSquare => this.rows == this.columns;
+
+            public float determinent
+            {
+                get
+                {
+                    UnityEngine.Debug.Assert(this.isSquare,
+                        "Unable to calculate the determinent of a non-square matrix.");
+                    int n = this.rows;
+                    if (n == 2)
+                    {
+                        // Avoid expensive calculations for smaller matrices
+                        return (this[0, 0] * this[1, 1]) - (this[1, 0] * this[0, 1]);
+                    }
+                    // Determinant is approximated by reducing the matrix to an upper triangle matrix.
+                    // The determinant is then the product of the main diagonal entries
+                    // cf: https://integratedmlai.com/find-the-determinant-of-a-matrix-with-pure-python-without-numpy-or-scipy/
+                    Matrix triangle = this.Copy();
+
+                    for (int diag = 0; diag < n; ++diag)
+                    {
+                        for (int row = diag + 1; row < n; ++row)
+                        {
+                            if (triangle[diag, diag] == 0f)
+                            {
+                                triangle[diag, diag] = 0.0000000000000000001f;
+                            }
+                            float crScaler = triangle[row, diag] / triangle[diag, diag];
+                            for (int col = 0; col < n; ++col)
+                            {
+                                triangle[row, col] -= crScaler * triangle[diag, col];
+                            }
+                        }
+                    }
+                    float product = 1f;
+                    for (int diag = 0; diag < n; ++diag)
+                    {
+                        product *= triangle[diag, diag];
+                    }
+                    return product;
+                }
+            }
 
             /// <summary>
             /// Creates a matrix of given rows and columns.
@@ -78,7 +120,6 @@ namespace GDS.Maths
                     for (int j = 0; j < this.columns; ++j)
                         m[i, j] = this[i, j];
                 return m;
-
             }
 
             /// <summary>
@@ -334,11 +375,31 @@ namespace GDS.Maths
 
     namespace MatrixSizes
     {
+        public struct MatrixSize2x2 : detail.IMatrixSize
+        {
+            public int rows { get { return 2; } }
+            public int columns { get { return 2; } }
+        }
+
+        public struct MatrixSize3x3 : detail.IMatrixSize
+        {
+            public int rows { get { return 3; } }
+            public int columns { get { return 3; } }
+        }
+
         public struct MatrixSize4x4 : detail.IMatrixSize
         {
             public int rows { get { return 4; } }
             public int columns { get { return 4; } }
         }
+    }
+
+    public class Matrix2x2 : detail.MatrixBase<MatrixSizes.MatrixSize2x2, Matrix2x2>
+    {
+    }
+
+    public class Matrix3x3 : detail.MatrixBase<MatrixSizes.MatrixSize3x3, Matrix3x3>
+    {
     }
 
     public class Matrix4x4 : detail.MatrixBase<MatrixSizes.MatrixSize4x4, Matrix4x4>

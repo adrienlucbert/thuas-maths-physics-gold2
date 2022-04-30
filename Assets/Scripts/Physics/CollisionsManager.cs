@@ -12,9 +12,23 @@ namespace GDS.Physics
     /// </summary>
     public class CollisionsManager : MonoBehaviour
     {
+        private List<Collision2D> collisions = new List<Collision2D> { };
+
+        // private void OnDrawGizmos()
+        // {
+        //     this.CheckCollisions();
+        //     foreach (Collision2D collision in this.collisions)
+        //         collision.DrawGizmos();
+        // }
+
         private void FixedUpdate()
         {
-            List<Collision2D> collisions = new List<Collision2D> { };
+            this.CheckCollisions();
+        }
+
+        private void CheckCollisions()
+        {
+            this.collisions.Clear();
             ACollider2D[] colliders = this.GetComponentsInChildren<ACollider2D>();
 
             for (int i = 0; i < colliders.Length; ++i)
@@ -30,10 +44,10 @@ namespace GDS.Physics
                         continue;
                     // If a collision happened, add it to the list
                     if (Collision2D.Compute(colliders[i], colliders[j], out Collision2D collision))
-                        collisions.Add(collision);
+                        this.collisions.Add(collision);
                 }
             }
-            foreach (Collision2D collision in collisions)
+            foreach (Collision2D collision in this.collisions)
                 collision.from.GetComponent<ACollisionResolver2D>().Resolve(collision);
         }
     }

@@ -92,6 +92,11 @@ namespace GDS.Maths
                 }
             }
 
+            public float SqrDistance(Vector rhs)
+            {
+                return (this - rhs).sqrMagnitude;
+            }
+
             public float Distance(Vector rhs)
             {
                 return (this - rhs).magnitude;
@@ -107,6 +112,16 @@ namespace GDS.Maths
             {
                 float normalMagnitude = onNormal.magnitude;
                 return ((this * onNormal) / (normalMagnitude * normalMagnitude)) * onNormal;
+            }
+
+            public float Dot(Vector rhs)
+            {
+                UnityEngine.Debug.Assert(this.size == rhs.size,
+                    "Vectors must be the same size to perform a dot product.");
+                float product = 0f;
+                for (int i = 0; i < this.size; ++i)
+                    product += this[i] * rhs[i];
+                return product;
             }
 
             /// <summary>
@@ -365,6 +380,33 @@ namespace GDS.Maths
         public static Vector2 right { get { return new Vector2(1, 0); } }
         public static Vector2 down { get { return new Vector2(0, -1); } }
         public static Vector2 up { get { return new Vector2(0, 1); } }
+
+        public static bool Intersect(Vector2 lhsOrigin, Vector2 lhsDir, Vector2 rhsOrigin, Vector2 rhsDir, out Vector2 intersection)
+        {
+            Vector2 v1i = lhsOrigin;
+            Vector2 v1f = lhsOrigin + lhsDir;
+            Vector2 v2i = rhsOrigin;
+            Vector2 v2f = rhsOrigin + rhsDir;
+            float a1 = v1f.y - v1i.y;
+            float a2 = v2f.y - v2i.y;
+            float b1 = v1i.x - v1f.x;
+            float b2 = v2i.x - v2f.x;
+            float c1 = (a1 * v1i.x) + (b1 * v1i.y);
+            float c2 = (a2 * v2i.x) + (b2 * v2i.y);
+            float d = Maths.Matrix2x2.FromRows(
+                new float[] { a1, b1 },
+                new float[] { a2, b2 }
+            ).determinent;
+            if (d == 0f)
+            {
+                intersection = null;
+                return false;
+            }
+            float x = ((c1 * b2) - (b1 * c2)) / d;
+            float y = ((a1 * c2) - (c1 * a2)) / d;
+            intersection = new Vector2(x, y);
+            return true;
+        }
 
         public static explicit operator UnityEngine.Vector2(Vector2 v)
         {
