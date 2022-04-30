@@ -17,7 +17,7 @@ namespace GDS.Physics
             return 1f;
         }
 
-        public override bool GetContactPoints(ACollider2D collider, out ContactPoint2D[] contacts, out float toi)
+        public override bool GetContactPoints(ACollider2D collider, float step, out ContactPoint2D[] contacts, out float toi)
         {
             throw new System.Exception($"Unsupported collision type between {typeof(LineCollider)} and {collider.GetType()}");
         }

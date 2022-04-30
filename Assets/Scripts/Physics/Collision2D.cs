@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace GDS.Physics
 {
+    [System.Serializable]
     public class ContactPoint2D
     {
         public ContactPoint2D(GDS.Maths.Vector2 position, GDS.Maths.Vector2 normal)
@@ -22,18 +23,20 @@ namespace GDS.Physics
         public GDS.Maths.Vector2 normal;
     }
 
+    [System.Serializable]
     public struct Collision2D
     {
-        public static bool Compute(ACollider2D from, ACollider2D to, out Collision2D collision)
+        public static bool Compute(ACollider2D from, ACollider2D to, float step, out Collision2D collision)
         {
             collision = new Collision2D
             {
                 from = from,
                 to = to,
                 contacts = null,
-                toi = 0f
+                toi = 0f,
+                step = step
             };
-            return from.GetContactPoints(to, out collision.contacts, out collision.toi);
+            return from.GetContactPoints(to, step, out collision.contacts, out collision.toi);
         }
 
         public void DrawGizmos()
@@ -46,8 +49,13 @@ namespace GDS.Physics
         public ACollider2D to;
         public ContactPoint2D[] contacts;
         /// <summary>
-        /// Roughly estimated time of impact (not considering forces).
+        /// Roughly estimated time of impact (not considering forces)
         /// </summary>
         public float toi;
+        /// <summary>
+        /// Time step to consider
+        /// Usually Time.deltaTime, but can be changed for debug purposes
+        /// </summary>
+        public float step;
     }
 }

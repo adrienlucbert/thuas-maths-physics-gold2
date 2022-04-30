@@ -7,7 +7,7 @@ namespace GDS.Physics
         public bool isStatic = false;
         public float density = 1f;
         private ForcesManager _forces;
-        protected ForcesManager Forces
+        public ForcesManager Forces
         {
             get
             {
@@ -22,6 +22,6 @@ namespace GDS.Physics
         {
             return this.GetArea() * this.density;
         }
-        public abstract bool GetContactPoints(ACollider2D collider, out ContactPoint2D[] contacts, out float toi);
+        public abstract bool GetContactPoints(ACollider2D collider, float step, out ContactPoint2D[] contacts, out float toi);
     }
 }

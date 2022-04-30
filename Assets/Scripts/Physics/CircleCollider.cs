@@ -32,13 +32,13 @@ namespace GDS.Physics
             return Mathf.PI * this.radius * this.radius;
         }
 
-        public override bool GetContactPoints(ACollider2D collider, out ContactPoint2D[] contacts, out float toi)
+        public override bool GetContactPoints(ACollider2D collider, float step, out ContactPoint2D[] contacts, out float toi)
         {
             contacts = null;
             toi = 0f;
 
             // Gizmos.color = Color.red;
-            // Gizmos.DrawLine((UnityEngine.Vector2)this.center, (UnityEngine.Vector2)(this.center + new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y)));
+            // Gizmos.DrawLine((UnityEngine.Vector2)this.center, (UnityEngine.Vector2)(this.center + step * new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y)));
 
             if (collider.GetType() == typeof(CircleCollider))
             {
@@ -48,10 +48,10 @@ namespace GDS.Physics
                 if (!CollisionHelpers2D.CCD.GetCircleCircleIntersection(
                       new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
                       new CollisionHelpers2D.MovingCircleInput { center = rhs.center, radius = rhs.radius, speed = rhsSpeed },
-                      out var collision, Time.deltaTime))
+                      out var collision, step))
                     return false;
 
-                // Gizmos.color = Color.red;
+                // Gizmos.color = Color.blue;
                 // Gizmos.DrawSphere((UnityEngine.Vector2)collision.position, 0.05f);
                 // Gizmos.DrawLine((UnityEngine.Vector2)collision.position, (UnityEngine.Vector2)(collision.position + collision.normal));
 
@@ -61,7 +61,7 @@ namespace GDS.Physics
 
                 contacts = new ContactPoint2D[]
                 {
-                  new ContactPoint2D(collision.position, collision.normal)
+                  new ContactPoint2D(collision.position + collision.normal * this.radius, collision.normal)
                 };
                 toi = collision.toi;
                 return true;
@@ -73,7 +73,7 @@ namespace GDS.Physics
                 if (!CollisionHelpers2D.CCD.GetCircleLineIntersection(
                       new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
                       new CollisionHelpers2D.LineInput { origin = rhs.origin, direction = rhs.direction },
-                      out var collision, Time.deltaTime))
+                      out var collision, step))
                     return false;
 
                 // Gizmos.color = Color.red;

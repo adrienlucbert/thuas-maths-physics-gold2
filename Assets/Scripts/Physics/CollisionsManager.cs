@@ -12,25 +12,19 @@ namespace GDS.Physics
     /// </summary>
     public class CollisionsManager : MonoBehaviour
     {
+        [SerializeField]
         private List<Collision2D> collisions = new List<Collision2D> { };
 
-        // private void OnDrawGizmos()
-        // {
-        //     this.CheckCollisions();
-        //     foreach (Collision2D collision in this.collisions)
-        //         collision.DrawGizmos();
-        // }
-
-        private void FixedUpdate()
+        private void OnDrawGizmos()
         {
-            this.CheckCollisions();
+            // this.CheckCollisions();
+            foreach (Collision2D collision in this.collisions)
+                collision.DrawGizmos();
         }
 
-        private void CheckCollisions()
+        public void CheckCollisions()
         {
-            this.collisions.Clear();
             ACollider2D[] colliders = this.GetComponentsInChildren<ACollider2D>();
-
             for (int i = 0; i < colliders.Length; ++i)
             {
                 for (int j = 0; j < colliders.Length; ++j)
@@ -43,12 +37,17 @@ namespace GDS.Physics
                     if (colliders[i].isStatic)
                         continue;
                     // If a collision happened, add it to the list
-                    if (Collision2D.Compute(colliders[i], colliders[j], out Collision2D collision))
+                    if (Collision2D.Compute(colliders[i], colliders[j], Time.deltaTime, out Collision2D collision))
                         this.collisions.Add(collision);
                 }
             }
+        }
+
+        public void ResolveCollisions()
+        {
             foreach (Collision2D collision in this.collisions)
                 collision.from.GetComponent<ACollisionResolver2D>().Resolve(collision);
+            this.collisions.Clear();
         }
     }
 }

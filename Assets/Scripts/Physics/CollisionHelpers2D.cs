@@ -40,7 +40,6 @@ namespace GDS.Physics
             public static bool GetCircleLineIntersection(MovingCircleInput circle, LineInput line, out CCDCollisionData collision, float maxTravelTime = 0f)
             {
                 collision = null;
-                float maxTravelAmount = 0f; // only used if maxTravelTime != 0f
                 // Get possible intersection between circle direction and line
                 if (!Maths.Vector2.Intersect(circle.center, circle.speed, line.origin, line.direction, out Maths.Vector2 centerLineIntersection))
                     return false;
@@ -55,19 +54,9 @@ namespace GDS.Physics
                     return false;
 
                 float velocity = circle.speed.magnitude;
-                float sqrDistanceToLine = vectorToClosestPointOnLine.sqrMagnitude;
-
-                if (maxTravelTime != 0f)
-                {
-                    maxTravelAmount = velocity * maxTravelTime;
-                    // No collision possible if movement amount is less than the
-                    // distance to the closest point on line
-                    if (maxTravelAmount * maxTravelAmount < sqrDistanceToLine)
-                        return false;
-                }
+                float distanceToLine = vectorToClosestPointOnLine.magnitude;
 
                 // Find and normalize normal vector
-                float distanceToLine = Mathf.Sqrt(sqrDistanceToLine);
                 collision.normal = vectorToClosestPointOnLine * -1f / distanceToLine;
 
                 // Get the circle position at time of collision (considering radius)
@@ -76,6 +65,7 @@ namespace GDS.Physics
 
                 if (maxTravelTime != 0f)
                 {
+                    float maxTravelAmount = velocity * maxTravelTime;
                     // Make sure that the distance the circle has to move to
                     // touch the line is not greated than the movement amount
                     if (maxTravelAmount < distanceToi)
