@@ -4,6 +4,7 @@ namespace GDS.Physics
 {
     public abstract class ACollider2D : MonoBehaviour
     {
+        public bool useCCD = true;
         public bool isStatic = false;
         public float density = 1f;
         private ForcesManager _forces;

@@ -16,6 +16,20 @@ namespace GDS.Physics
             }
         }
 
-        public abstract void Resolve(GDS.Physics.Collision2D collision);
+        public virtual void Resolve(GDS.Physics.Collision2D collision)
+        {
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (!contact.penetration.HasValue)
+                    continue;
+                // Push object out of the collider
+                GDS.Maths.Vector2 offset = contact.normal * contact.penetration.Value;
+                this.transform.position = new UnityEngine.Vector3(
+                    this.transform.position.x + offset.x,
+                    this.transform.position.y + offset.y,
+                    this.transform.position.z
+                );
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace GDS.Physics
 
         public override void Resolve(GDS.Physics.Collision2D collision)
         {
+            base.Resolve(collision);
             // GUIStyle style = new GUIStyle();
             // style.normal.textColor = Color.black;
 

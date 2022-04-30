@@ -5,10 +5,11 @@ namespace GDS.Physics
     [System.Serializable]
     public class ContactPoint2D
     {
-        public ContactPoint2D(GDS.Maths.Vector2 position, GDS.Maths.Vector2 normal)
+        public ContactPoint2D(GDS.Maths.Vector2 position, GDS.Maths.Vector2 normal, float? penetration = null)
         {
             this.position = position;
             this.normal = normal;
+            this.penetration = penetration;
         }
 
         public void DrawGizmos()
@@ -21,6 +22,7 @@ namespace GDS.Physics
 
         public GDS.Maths.Vector2 position;
         public GDS.Maths.Vector2 normal;
+        public float? penetration;
     }
 
     [System.Serializable]

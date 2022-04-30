@@ -43,12 +43,27 @@ namespace GDS.Physics
             if (collider.GetType() == typeof(CircleCollider))
             {
                 CircleCollider rhs = collider as CircleCollider;
+
+                // DCD pass
+                var sc1 = new CollisionHelpers2D.StaticCircleInput { center = this.center, radius = this.radius };
+                var sc2 = new CollisionHelpers2D.StaticCircleInput { center = rhs.center, radius = rhs.radius };
+                if (CollisionHelpers2D.DCD.GetCircleCircleOverlap(sc1, sc2, out var overlap))
+                {
+                    contacts = new ContactPoint2D[]
+                    {
+                      new ContactPoint2D(overlap.position, overlap.normal, overlap.penetration)
+                    };
+                    return true;
+                }
+
+                // CCD pass
+                if (!this.useCCD)
+                    return false;
                 Maths.Vector2 lhsSpeed = new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y);
                 Maths.Vector2 rhsSpeed = new Maths.Vector2(rhs.Forces?.Speed.x ?? 0f, rhs.Forces?.Speed.y ?? 0f);
-                if (!CollisionHelpers2D.CCD.GetCircleCircleIntersection(
-                      new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
-                      new CollisionHelpers2D.MovingCircleInput { center = rhs.center, radius = rhs.radius, speed = rhsSpeed },
-                      out var collision, step))
+                var mc1 = new CollisionHelpers2D.MovingCircleInput { center = sc1.center, radius = sc1.radius, speed = lhsSpeed };
+                var mc2 = new CollisionHelpers2D.MovingCircleInput { center = sc2.center, radius = sc2.radius, speed = rhsSpeed };
+                if (!CollisionHelpers2D.CCD.GetCircleCircleIntersection(mc1, mc2, out var collision, step))
                     return false;
 
                 // Gizmos.color = Color.blue;
@@ -69,11 +84,25 @@ namespace GDS.Physics
             if (collider.GetType() == typeof(LineCollider))
             {
                 LineCollider rhs = collider as LineCollider;
+
+                // DCD pass
+                var sc = new CollisionHelpers2D.StaticCircleInput { center = this.center, radius = this.radius };
+                var line = new CollisionHelpers2D.LineInput { origin = rhs.origin, direction = rhs.direction };
+                if (CollisionHelpers2D.DCD.GetCircleLineOverlap(sc, line, out var overlap))
+                {
+                    contacts = new ContactPoint2D[]
+                    {
+                      new ContactPoint2D(overlap.position, overlap.normal, overlap.penetration)
+                    };
+                    return true;
+                }
+
+                // CCD pass
+                if (!this.useCCD)
+                    return false;
                 Maths.Vector2 lhsSpeed = new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y);
-                if (!CollisionHelpers2D.CCD.GetCircleLineIntersection(
-                      new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed },
-                      new CollisionHelpers2D.LineInput { origin = rhs.origin, direction = rhs.direction },
-                      out var collision, step))
+                var mc = new CollisionHelpers2D.MovingCircleInput { center = this.center, radius = this.radius, speed = lhsSpeed };
+                if (!CollisionHelpers2D.CCD.GetCircleLineIntersection(mc, line, out var collision, step))
                     return false;
 
                 // Gizmos.color = Color.red;
