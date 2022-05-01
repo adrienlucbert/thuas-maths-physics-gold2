@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class SpringTailScaler : MonoBehaviour
+[RequireComponent(typeof(GDS.Physics.SpringJoint2D))]
+public class SpringTrailScaler : MonoBehaviour
 {
-    public GameObject LeftEnd;
-    public GameObject RightEnd;
     private Renderer _renderer;
+    private GDS.Physics.SpringJoint2D _joint;
 
     public void Start()
     {
-        Debug.Assert(this.LeftEnd != null);
-        Debug.Assert(this.RightEnd != null);
+        this._joint = this.GetComponent<GDS.Physics.SpringJoint2D>();
+        Debug.Assert(this._joint != null);
         this._renderer = this.GetComponent<Renderer>();
         Debug.Assert(this._renderer != null);
         Vector2 startScale = this.transform.localScale;
@@ -21,29 +21,11 @@ public class SpringTailScaler : MonoBehaviour
         );
     }
 
-    private float GetLeftEndPosition()
-    {
-        float extent = 0f;
-        if (this.LeftEnd.TryGetComponent(out Renderer renderer))
-            extent = renderer.bounds.extents.x;
-        return this.LeftEnd.transform.position.x + extent;
-    }
-
-    private float GetRightEndPosition()
-    {
-        float extent = 0f;
-        if (this.RightEnd.TryGetComponent(out Renderer renderer))
-            extent = renderer.bounds.extents.x;
-        return this.RightEnd.transform.position.x - extent;
-    }
-
     public void Scale()
     {
-        float leftEndPosition = this.GetLeftEndPosition();
-        float rightEndPosition = this.GetRightEndPosition();
-        float distance = rightEndPosition - leftEndPosition;
+        float distance = this._joint.RightEnd.min.x - this._joint.LeftEnd.max.x;
         this.transform.position = new Vector3(
-            leftEndPosition + (distance / 2f),
+            this._joint.LeftEnd.max.x + (distance / 2f),
             this.transform.position.y,
             this.transform.position.z
         );

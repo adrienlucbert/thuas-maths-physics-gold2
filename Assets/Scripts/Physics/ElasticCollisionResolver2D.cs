@@ -6,6 +6,7 @@ namespace GDS.Physics
     [RequireComponent(typeof(ACollider2D))]
     public class ElasticCollisionResolver2D : ACollisionResolver2D
     {
+        [Range(0f, 1f)]
         public float Restitution = 1f; // Fully elastic by default
 
         public override void Resolve(GDS.Physics.Collision2D collision)
