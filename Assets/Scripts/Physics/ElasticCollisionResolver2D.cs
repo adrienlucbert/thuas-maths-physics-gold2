@@ -1,5 +1,4 @@
 using UnityEngine;
-// using UnityEditor;
 
 namespace GDS.Physics
 {
@@ -12,8 +11,6 @@ namespace GDS.Physics
         public override void Resolve(GDS.Physics.Collision2D collision)
         {
             base.PushOutResolution(collision);
-            // GUIStyle style = new GUIStyle();
-            // style.normal.textColor = Color.black;
 
             // Neglect current speed
             this.Forces.AddOneTimeForce(new Force(this.Forces.Speed * -1f, Force.Type.VelocityChange));
@@ -45,12 +42,6 @@ namespace GDS.Physics
                     Maths.Vector3 posAfterFrame = posAtToi + travelFromToi;
 
                     this.transform.position = (UnityEngine.Vector3)posAfterFrame;
-
-                    // Gizmos.color = new Color(1f, 0.1f, 1f);
-                    // Gizmos.DrawLine(this.transform.position, (UnityEngine.Vector3)posAtToi);
-                    // Gizmos.DrawLine((UnityEngine.Vector3)posAtToi, (UnityEngine.Vector3)posAfterFrame);
-                    // Gizmos.DrawSphere((UnityEngine.Vector3)posAfterFrame, 0.05f);
-                    // Handles.Label((UnityEngine.Vector3)(posAtToi + Maths.Vector3.right * 0.2f), $"{v1}", style);
                 }
             }
         }

@@ -14,16 +14,6 @@ public class SimulationManager : MonoBehaviour
         }
     }
 
-    // private void OnDrawGizmos()
-    // {
-    //     if (this._collisionsManager != null)
-    //     {
-    //         this._collisionsManager.CheckCollisions();
-    //         this._collisionsManager.DrawGizmos();
-    //         this._collisionsManager.ClearCollisions();
-    //     }
-    // }
-
     private void FixedUpdate()
     {
         if (this._collisionsManager != null)

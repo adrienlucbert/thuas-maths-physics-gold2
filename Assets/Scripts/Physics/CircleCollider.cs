@@ -37,9 +37,6 @@ namespace GDS.Physics
             contacts = null;
             toi = 0f;
 
-            // Gizmos.color = Color.red;
-            // Gizmos.DrawLine((UnityEngine.Vector2)this.center, (UnityEngine.Vector2)(this.center + step * new Maths.Vector2(this.Forces.Speed.x, this.Forces.Speed.y)));
-
             if (collider.GetType() == typeof(CircleCollider))
             {
                 CircleCollider rhs = collider as CircleCollider;
@@ -65,14 +62,6 @@ namespace GDS.Physics
                 var mc2 = new CollisionHelpers2D.MovingCircleInput { center = sc2.center, radius = sc2.radius, speed = rhsSpeed };
                 if (!CollisionHelpers2D.CCD.GetCircleCircleIntersection(mc1, mc2, out var collision, step))
                     return false;
-
-                // Gizmos.color = Color.blue;
-                // Gizmos.DrawSphere((UnityEngine.Vector2)collision.position, 0.05f);
-                // Gizmos.DrawLine((UnityEngine.Vector2)collision.position, (UnityEngine.Vector2)(collision.position + collision.normal));
-
-                // Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
-                // Gizmos.DrawSphere((UnityEngine.Vector2)(collision.position), 0.25f);
-                // Gizmos.DrawSphere((UnityEngine.Vector2)(rhs.center + (rhsSpeed * collision.toi)), 0.25f);
 
                 contacts = new ContactPoint2D[]
                 {
@@ -105,15 +94,7 @@ namespace GDS.Physics
                 if (!CollisionHelpers2D.CCD.GetCircleLineIntersection(mc, line, out var collision, step))
                     return false;
 
-                // Gizmos.color = Color.red;
-                // Gizmos.DrawSphere((UnityEngine.Vector2)collision.position, 0.05f);
-
                 GDS.Maths.Vector2 contact = collision.position - (collision.normal * this.radius);
-
-                // Gizmos.color = Color.blue;
-                // Gizmos.DrawLine((UnityEngine.Vector2)contact, (UnityEngine.Vector2)(contact + collision.normal));
-                // Gizmos.DrawSphere((UnityEngine.Vector2)contact, 0.05f);
-
                 contacts = new ContactPoint2D[]
                 {
                   new ContactPoint2D(contact, collision.normal)

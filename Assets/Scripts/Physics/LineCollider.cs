@@ -6,10 +6,6 @@ namespace GDS.Physics
             => new GDS.Maths.Vector2(this.transform.position.x, this.transform.position.y);
         public GDS.Maths.Vector2 direction;
 
-        private void OnDrawGizmosSelected()
-        {
-        }
-
         public override float GetArea()
         {
             // A line has no area. To make it have an arbitrary

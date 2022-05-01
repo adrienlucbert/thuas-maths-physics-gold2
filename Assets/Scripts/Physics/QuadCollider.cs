@@ -39,11 +39,6 @@ namespace GDS.Physics
                 // DCD pass
                 var sq1 = new CollisionHelpers2D.StaticQuadInput { origin = this.origin, size = this.size };
                 var sq2 = new CollisionHelpers2D.StaticQuadInput { origin = rhs.origin, size = rhs.size };
-
-                // Gizmos.color = Color.green;
-                // Gizmos.DrawLine((UnityEngine.Vector2)sq1.origin, (UnityEngine.Vector2)(sq1.origin + Maths.Vector2.right * sq1.size.x));
-                // Gizmos.DrawLine((UnityEngine.Vector2)sq1.origin, (UnityEngine.Vector2)(sq1.origin + Maths.Vector2.up * sq1.size.y));
-
                 if (CollisionHelpers2D.DCD.GetQuadQuadOverlap(sq1, sq2, out var overlap))
                 {
                     contacts = new ContactPoint2D[]
