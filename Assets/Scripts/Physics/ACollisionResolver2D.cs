@@ -16,7 +16,10 @@ namespace GDS.Physics
             }
         }
 
-        public virtual void Resolve(GDS.Physics.Collision2D collision)
+        /// <summary>
+        /// Resolve a collision by pushing the current object out of the collider
+        /// </summary>
+        public void PushOutResolution(GDS.Physics.Collision2D collision)
         {
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -31,5 +34,7 @@ namespace GDS.Physics
                 );
             }
         }
+
+        public abstract void Resolve(GDS.Physics.Collision2D collision);
     }
 }

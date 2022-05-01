@@ -54,7 +54,7 @@ public class BillardBallsSpawner : MonoBehaviour
                 rng.Next((int)(this.speedBounds[0] * 1000), (int)(this.speedBounds[1] * 1000)) / 1000f,
                 0f
             );
-            ball.GetComponent<GDS.Physics.ForcesManager>().AddForce(new GDS.Physics.Force(startVelocity, GDS.Physics.Force.Type.VelocityChange));
+            ball.GetComponent<GDS.Physics.ForcesManager>().AddOneTimeForce(new GDS.Physics.Force(startVelocity, GDS.Physics.Force.Type.VelocityChange));
         }
     }
 }

@@ -110,8 +110,8 @@ namespace GDS.Maths
             /// <returns>Projected vector</returns>
             public Vector Project(Vector onNormal)
             {
-                float normalMagnitude = onNormal.magnitude;
-                return ((this * onNormal) / (normalMagnitude * normalMagnitude)) * onNormal;
+                Vector unit = onNormal.normalized;
+                return unit * this.Dot(unit);
             }
 
             public float Dot(Vector rhs)
@@ -205,6 +205,8 @@ namespace GDS.Maths
 
             public static bool operator ==(Vector lhs, Vector rhs)
             {
+                if (rhs is null)
+                    return lhs is null;
                 if (lhs.size != rhs.size)
                     return false;
                 for (int i = 0; i < lhs.size; ++i)
@@ -220,7 +222,7 @@ namespace GDS.Maths
 
             public override bool Equals(object rhs)
             {
-                if (rhs == null || !(rhs is Vector))
+                if (rhs is null || !(rhs is Vector))
                     return false;
                 return this == (rhs as Vector);
             }
@@ -444,6 +446,15 @@ namespace GDS.Maths
         public static Vector3 up { get { return new Vector3(0, 1, 0); } }
         public static Vector3 back { get { return new Vector3(0, 0, -1); } }
         public static Vector3 forward { get { return new Vector3(0, 0, 1); } }
+
+        public Vector3 Cross(Vector3 rhs)
+        {
+            return new Vector3(
+                this.y * rhs.z - rhs.z * this.y,
+                this.z * rhs.x - this.x * rhs.z,
+                this.x * rhs.y - this.y * rhs.x
+            );
+        }
 
         public static explicit operator UnityEngine.Vector3(Vector3 v)
         {

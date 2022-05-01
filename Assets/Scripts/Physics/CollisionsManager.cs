@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GDS.Physics
@@ -15,9 +16,8 @@ namespace GDS.Physics
         [SerializeField]
         private List<Collision2D> collisions = new List<Collision2D> { };
 
-        private void OnDrawGizmos()
+        public void DrawGizmos()
         {
-            // this.CheckCollisions();
             foreach (Collision2D collision in this.collisions)
                 collision.DrawGizmos();
         }
@@ -36,6 +36,9 @@ namespace GDS.Physics
                     // we can avoid computing the collision response for them
                     if (colliders[i].isStatic)
                         continue;
+                    // Ignore collision if collider has one of the ignored tags
+                    if (colliders[i].IgnoreTags.Any(tag => colliders[j].CompareTag(tag)))
+                        continue;
                     // If a collision happened, add it to the list
                     if (Collision2D.Compute(colliders[i], colliders[j], Time.deltaTime, out Collision2D collision))
                         this.collisions.Add(collision);
@@ -47,6 +50,11 @@ namespace GDS.Physics
         {
             foreach (Collision2D collision in this.collisions)
                 collision.from.GetComponent<ACollisionResolver2D>().Resolve(collision);
+            this.ClearCollisions();
+        }
+
+        public void ClearCollisions()
+        {
             this.collisions.Clear();
         }
     }

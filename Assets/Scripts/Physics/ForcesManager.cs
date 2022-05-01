@@ -10,6 +10,7 @@ namespace GDS.Physics
         public float SpeedAmount = 0f;
 
         [SerializeField] private List<Force> _forces;
+        [SerializeField] private List<Force> _oneTimeForces;
         private ACollider2D _collider;
 
         private void Start()
@@ -21,10 +22,15 @@ namespace GDS.Physics
         {
             Maths.Vector3 forcesSum = Maths.Vector3.zero;
             float mass = this._collider.GetMass();
+
+            // Sum all forces
             foreach (Force force in this._forces)
                 forcesSum += force.Compute(mass, Time.deltaTime);
-            // Discard velocity change forces (single-use)
-            this._forces.RemoveAll(force => force.type == Force.Type.VelocityChange);
+            foreach (Force force in this._oneTimeForces)
+                forcesSum += force.Compute(mass, Time.deltaTime);
+            // Discard one-time forces after they've been used
+            this._oneTimeForces.Clear();
+
             this.Speed += forcesSum;
             this.SpeedAmount = this.Speed.magnitude;
             this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed * Time.deltaTime);
@@ -35,9 +41,35 @@ namespace GDS.Physics
             this._forces.Add(force);
         }
 
-        public void RemoveForce(Force force)
+        public void AddOneTimeForce(Force force)
         {
-            this._forces.Remove(force);
+            this._oneTimeForces.Add(force);
+        }
+
+        public bool UpdateForce(Force value)
+        {
+            Force force = this._forces.Find(force => force.name == value.name);
+            if (force == null)
+                return false;
+            for (int i = 0; i < force.size; ++i)
+                force[i] = value[i];
+            return true;
+        }
+
+        public void UpdateOrAddForce(Force force)
+        {
+            if (!this.UpdateForce(force))
+                this.AddForce(force);
+        }
+
+        public bool RemoveForce(Force force)
+        {
+            return this._forces.Remove(force);
+        }
+
+        public bool RemoveForce(string name)
+        {
+            return this._forces.RemoveAll(force => force.name == name) > 0;
         }
     }
 }

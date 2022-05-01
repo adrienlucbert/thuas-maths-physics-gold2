@@ -11,17 +11,20 @@ namespace GDS.Physics
             VelocityChange
         };
 
+        public string name = null;
         public Type type = Type.Force;
 
-        public Force(float x, float y, float z, Type type)
+        public Force(float x, float y, float z, Type type, string name = null)
           : base(x, y, z)
         {
             this.type = type;
+            this.name = name;
         }
-        public Force(Maths.Vector3 force, Type type)
+        public Force(Maths.Vector3 force, Type type, string name = null)
          : base(force.x, force.y, force.z)
         {
             this.type = type;
+            this.name = name;
         }
 
         public Maths.Vector3 Compute(float mass, float timestep)

@@ -3,12 +3,26 @@ using GDS.Physics;
 
 public class SimulationManager : MonoBehaviour
 {
-    private CollisionsManager _collisionsManager;
-
-    private void Awake()
+    private CollisionsManager __collisionsManager;
+    private CollisionsManager _collisionsManager
     {
-        this._collisionsManager = this.GetComponent<CollisionsManager>();
+        get
+        {
+            if (this.__collisionsManager == null)
+                this.__collisionsManager = this.GetComponent<CollisionsManager>();
+            return this.__collisionsManager;
+        }
     }
+
+    // private void OnDrawGizmos()
+    // {
+    //     if (this._collisionsManager != null)
+    //     {
+    //         this._collisionsManager.CheckCollisions();
+    //         this._collisionsManager.DrawGizmos();
+    //         this._collisionsManager.ClearCollisions();
+    //     }
+    // }
 
     private void FixedUpdate()
     {

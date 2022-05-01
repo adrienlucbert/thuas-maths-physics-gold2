@@ -7,6 +7,7 @@ namespace GDS.Physics
         public bool useCCD = true;
         public bool isStatic = false;
         public float density = 1f;
+        [TagSelector] public string[] IgnoreTags = new string[] { };
         private ForcesManager _forces;
         public ForcesManager Forces
         {

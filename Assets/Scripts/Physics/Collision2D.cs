@@ -17,7 +17,10 @@ namespace GDS.Physics
             Gizmos.color = Color.blue;
             Gizmos.DrawSphere((UnityEngine.Vector2)this.position, 0.01f);
             Gizmos.color = Color.green;
-            Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal));
+            if (this.penetration.HasValue)
+                Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal * this.penetration.Value));
+            else
+                Gizmos.DrawLine((UnityEngine.Vector2)this.position, (UnityEngine.Vector2)(this.position + this.normal));
         }
 
         public GDS.Maths.Vector2 position;

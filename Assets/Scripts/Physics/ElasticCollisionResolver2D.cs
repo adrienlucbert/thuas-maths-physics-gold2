@@ -10,12 +10,12 @@ namespace GDS.Physics
 
         public override void Resolve(GDS.Physics.Collision2D collision)
         {
-            base.Resolve(collision);
+            base.PushOutResolution(collision);
             // GUIStyle style = new GUIStyle();
             // style.normal.textColor = Color.black;
 
             // Neglect current speed
-            this.Forces.AddForce(new Force(this.Forces.Speed * -1f, Force.Type.VelocityChange));
+            this.Forces.AddOneTimeForce(new Force(this.Forces.Speed * -1f, Force.Type.VelocityChange));
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 // Add a force in the reflected direction
@@ -23,7 +23,7 @@ namespace GDS.Physics
                 if (collision.to.isStatic)
                 {
                     Maths.Vector3 v1f = this.Forces.Speed.Reflect(normal3D) * this.Restitution;
-                    this.Forces.AddForce(new Force(v1f, Force.Type.VelocityChange));
+                    this.Forces.AddOneTimeForce(new Force(v1f, Force.Type.VelocityChange));
                 }
                 else
                 {
@@ -36,7 +36,7 @@ namespace GDS.Physics
                     float p = 2f * (a1 - a2) / (m1 + m2);
 
                     Maths.Vector3 v1f = (v1 - (p * m2 * normal3D)) * this.Restitution;
-                    this.Forces.AddForce(new Force(v1f, Force.Type.VelocityChange));
+                    this.Forces.AddOneTimeForce(new Force(v1f, Force.Type.VelocityChange));
 
                     Maths.Vector3 travelToToi = v1 * collision.toi;
                     Maths.Vector3 travelFromToi = v1f * (collision.step - collision.toi);
