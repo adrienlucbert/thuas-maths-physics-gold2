@@ -21,12 +21,12 @@ public class SimulationManager : MonoBehaviour
             this._collisionsManager.CheckCollisions();
             this._collisionsManager.ResolveCollisions();
         }
-        this.ApplyForces();
+        this.ApplyForces(Time.fixedDeltaTime);
     }
 
-    private void ApplyForces()
+    private void ApplyForces(float deltaTime)
     {
         foreach (ForcesManager forcesManager in this.GetComponentsInChildren<ForcesManager>())
-            forcesManager.Apply();
+            forcesManager.Apply(deltaTime);
     }
 }

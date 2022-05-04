@@ -18,22 +18,22 @@ namespace GDS.Physics
             this._collider = this.GetComponent<ACollider2D>();
         }
 
-        public void Apply()
+        public void Apply(float deltaTime)
         {
             Maths.Vector3 forcesSum = Maths.Vector3.zero;
             float mass = this._collider.GetMass();
 
             // Sum all forces
             foreach (Force force in this._forces)
-                forcesSum += force.Compute(mass, Time.deltaTime);
+                forcesSum += force.Compute(mass, deltaTime);
             foreach (Force force in this._oneTimeForces)
-                forcesSum += force.Compute(mass, Time.deltaTime);
+                forcesSum += force.Compute(mass, deltaTime);
             // Discard one-time forces after they've been used
             this._oneTimeForces.Clear();
 
             this.Speed += forcesSum;
             this.SpeedAmount = this.Speed.magnitude;
-            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed * Time.deltaTime);
+            this.transform.position = (Vector3)((Maths.Vector3)this.transform.position + this.Speed * deltaTime);
         }
 
         public void AddForce(Force force)

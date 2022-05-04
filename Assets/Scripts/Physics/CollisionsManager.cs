@@ -40,7 +40,7 @@ namespace GDS.Physics
                     if (colliders[i].IgnoreTags.Any(tag => colliders[j].CompareTag(tag)))
                         continue;
                     // If a collision happened, add it to the list
-                    if (Collision2D.Compute(colliders[i], colliders[j], Time.deltaTime, out Collision2D collision))
+                    if (Collision2D.Compute(colliders[i], colliders[j], Time.fixedDeltaTime, out Collision2D collision))
                         this.collisions.Add(collision);
                 }
             }
